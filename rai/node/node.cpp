@@ -811,6 +811,7 @@ state_block_generate_canary (0)
 	{
 		case rai::rai_networks::rai_test_network:
 			preconfigured_representatives.push_back (rai::genesis_account);
+			preconfigured_peers.push_back ("testnetpeer.mynos.top");
 			break;
 		case rai::rai_networks::rai_beta_network:
 			preconfigured_peers.push_back ("rai-beta.raiblocks.net");
