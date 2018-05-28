@@ -488,13 +488,13 @@ TEST (logging, DISABLED_upgrade_v1_v2)
 TEST (node, price)
 {
 	rai::system system (24000, 1);
-	auto price1 (system.nodes[0]->price (rai::Gxrb_ratio, 1));
+	auto price1 (system.nodes[0]->price (rai::Geur_ratio, 1));
 	ASSERT_EQ (rai::node::price_max * 100.0, price1);
-	auto price2 (system.nodes[0]->price (rai::Gxrb_ratio * int(rai::node::free_cutoff + 1), 1));
+	auto price2 (system.nodes[0]->price (rai::Geur_ratio * int(rai::node::free_cutoff + 1), 1));
 	ASSERT_EQ (0, price2);
-	auto price3 (system.nodes[0]->price (rai::Gxrb_ratio * int(rai::node::free_cutoff + 2) / 2, 1));
+	auto price3 (system.nodes[0]->price (rai::Geur_ratio * int(rai::node::free_cutoff + 2) / 2, 1));
 	ASSERT_EQ (rai::node::price_max * 100.0 / 2, price3);
-	auto price4 (system.nodes[0]->price (rai::Gxrb_ratio * int(rai::node::free_cutoff) * 2, 1));
+	auto price4 (system.nodes[0]->price (rai::Geur_ratio * int(rai::node::free_cutoff) * 2, 1));
 	ASSERT_EQ (0, price4);
 }
 
@@ -610,10 +610,10 @@ TEST (node_config, unversioned_v2_upgrade)
 	config1.deserialize_json (upgraded, tree);
 	ASSERT_TRUE (upgraded);
 	ASSERT_EQ (1, config1.preconfigured_representatives.size ());
-	ASSERT_EQ ("xrb_3e3j5tkog48pnny9dmfzj1r16pg8t1e76dz5tmac6iq689wyjfpiij4txtdo", config1.preconfigured_representatives[0].to_account ());
+	ASSERT_EQ ("eur_3e3j5tkog48pnny9dmfzj1r16pg8t1e76dz5tmac6iq689wyjfpiij4txtdo", config1.preconfigured_representatives[0].to_account ());
 	auto reps (tree.get_child ("preconfigured_representatives"));
 	ASSERT_EQ (1, reps.size ());
-	ASSERT_EQ ("xrb_3e3j5tkog48pnny9dmfzj1r16pg8t1e76dz5tmac6iq689wyjfpiij4txtdo", reps.begin ()->second.get<std::string> (""));
+	ASSERT_EQ ("eur_3e3j5tkog48pnny9dmfzj1r16pg8t1e76dz5tmac6iq689wyjfpiij4txtdo", reps.begin ()->second.get<std::string> (""));
 	auto version (tree.get<std::string> ("version"));
 	ASSERT_GT (std::stoull (version), 1);
 }
@@ -893,9 +893,9 @@ TEST (node, DISABLED_fork_bootstrap_flip)
 	system0.wallet (0)->insert_adhoc (rai::test_genesis_key.prv);
 	rai::block_hash latest (system0.nodes[0]->latest (rai::test_genesis_key.pub));
 	rai::keypair key1;
-	auto send1 (std::make_shared<rai::send_block> (latest, key1.pub, rai::genesis_amount - rai::Gxrb_ratio, rai::test_genesis_key.prv, rai::test_genesis_key.pub, system0.work.generate (latest)));
+	auto send1 (std::make_shared<rai::send_block> (latest, key1.pub, rai::genesis_amount - rai::Geur_ratio, rai::test_genesis_key.prv, rai::test_genesis_key.pub, system0.work.generate (latest)));
 	rai::keypair key2;
-	auto send2 (std::make_shared<rai::send_block> (latest, key2.pub, rai::genesis_amount - rai::Gxrb_ratio, rai::test_genesis_key.prv, rai::test_genesis_key.pub, system0.work.generate (latest)));
+	auto send2 (std::make_shared<rai::send_block> (latest, key2.pub, rai::genesis_amount - rai::Geur_ratio, rai::test_genesis_key.prv, rai::test_genesis_key.pub, system0.work.generate (latest)));
 	// Insert but don't rebroadcast, simulating settled blocks
 	node1.block_processor.add (send1);
 	node1.block_processor.flush ();
@@ -1086,11 +1086,11 @@ TEST (node, broadcast_elected)
 		rai::transaction transaction0 (node0->store.environment, nullptr, true);
 		rai::transaction transaction1 (node1->store.environment, nullptr, true);
 		rai::transaction transaction2 (node2->store.environment, nullptr, true);
-		rai::send_block fund_big (node0->ledger.latest (transaction0, rai::test_genesis_key.pub), rep_big.pub, rai::Gxrb_ratio * 5, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
+		rai::send_block fund_big (node0->ledger.latest (transaction0, rai::test_genesis_key.pub), rep_big.pub, rai::Geur_ratio * 5, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
 		rai::open_block open_big (fund_big.hash (), rep_big.pub, rep_big.pub, rep_big.prv, rep_big.pub, 0);
-		rai::send_block fund_small (fund_big.hash (), rep_small.pub, rai::Gxrb_ratio * 2, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
+		rai::send_block fund_small (fund_big.hash (), rep_small.pub, rai::Geur_ratio * 2, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
 		rai::open_block open_small (fund_small.hash (), rep_small.pub, rep_small.pub, rep_small.prv, rep_small.pub, 0);
-		rai::send_block fund_other (fund_small.hash (), rep_other.pub, rai::Gxrb_ratio * 1, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
+		rai::send_block fund_other (fund_small.hash (), rep_other.pub, rai::Geur_ratio * 1, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
 		rai::open_block open_other (fund_other.hash (), rep_other.pub, rep_other.pub, rep_other.prv, rep_other.pub, 0);
 		node0->generate_work (fund_big);
 		node0->generate_work (open_big);
@@ -1253,21 +1253,21 @@ TEST (node, DISABLED_unconfirmed_send)
 	rai::keypair key0;
 	wallet1->insert_adhoc (key0.prv);
 	wallet0->insert_adhoc (rai::test_genesis_key.prv);
-	auto send1 (wallet0->send_action (rai::genesis_account, key0.pub, 2 * rai::Mxrb_ratio));
+	auto send1 (wallet0->send_action (rai::genesis_account, key0.pub, 2 * rai::Meur_ratio));
 	auto iterations0 (0);
-	while (node1.balance (key0.pub) != 2 * rai::Mxrb_ratio || node1.bootstrap_initiator.in_progress ())
+	while (node1.balance (key0.pub) != 2 * rai::Meur_ratio || node1.bootstrap_initiator.in_progress ())
 	{
 		system.poll ();
 		++iterations0;
 		ASSERT_GT (200, iterations0);
 	}
 	auto latest (node1.latest (key0.pub));
-	rai::send_block send2 (latest, rai::genesis_account, rai::Mxrb_ratio, key0.prv, key0.pub, node0.generate_work (latest));
+	rai::send_block send2 (latest, rai::genesis_account, rai::Meur_ratio, key0.prv, key0.pub, node0.generate_work (latest));
 	{
 		rai::transaction transaction (node1.store.environment, nullptr, true);
 		ASSERT_EQ (rai::process_result::progress, node1.ledger.process (transaction, send2).code);
 	}
-	auto send3 (wallet1->send_action (key0.pub, rai::genesis_account, rai::Mxrb_ratio));
+	auto send3 (wallet1->send_action (key0.pub, rai::genesis_account, rai::Meur_ratio));
 	auto iterations (0);
 	while (node0.balance (rai::genesis_account) != rai::genesis_amount)
 	{
@@ -1289,7 +1289,7 @@ TEST (node, rep_list)
 	wallet0->insert_adhoc (rai::test_genesis_key.prv);
 	rai::keypair key1;
 	// Broadcast a confirm so others should know this is a rep node
-	wallet0->send_action (rai::test_genesis_key.pub, key1.pub, rai::Mxrb_ratio);
+	wallet0->send_action (rai::test_genesis_key.pub, key1.pub, rai::Meur_ratio);
 	ASSERT_EQ (0, node1.peers.representatives (1).size ());
 	auto iterations (0);
 	auto done (false);
@@ -1326,7 +1326,7 @@ TEST (node, no_voting)
 	rai::keypair key1;
 	wallet1->insert_adhoc (key1.prv);
 	// Broadcast a confirm so others should know this is a rep node
-	wallet0->send_action (rai::test_genesis_key.pub, key1.pub, rai::Mxrb_ratio);
+	wallet0->send_action (rai::test_genesis_key.pub, key1.pub, rai::Meur_ratio);
 	auto iterations (0);
 	while (node1.balance (key1.pub).is_zero ())
 	{
@@ -1396,7 +1396,7 @@ TEST (node, vote_replay)
 		ASSERT_EQ (nullptr, vote);
 	}
 	system.wallet (0)->insert_adhoc (rai::test_genesis_key.prv);
-	auto block (system.wallet (0)->send_action (rai::test_genesis_key.pub, key.pub, rai::Gxrb_ratio));
+	auto block (system.wallet (0)->send_action (rai::test_genesis_key.pub, key.pub, rai::Geur_ratio));
 	ASSERT_NE (nullptr, block);
 	auto done (false);
 	auto iterations (0);
@@ -1483,7 +1483,7 @@ TEST (node, online_reps)
 	rai::system system (24000, 2);
 	system.wallet (0)->insert_adhoc (rai::test_genesis_key.prv);
 	ASSERT_TRUE (system.nodes[1]->online_reps.online_stake ().is_zero ());
-	system.wallet (0)->send_action (rai::test_genesis_key.pub, rai::test_genesis_key.pub, rai::Gxrb_ratio);
+	system.wallet (0)->send_action (rai::test_genesis_key.pub, rai::test_genesis_key.pub, rai::Geur_ratio);
 	auto iterations (0);
 	while (system.nodes[1]->online_reps.online_stake ().is_zero ())
 	{
@@ -1499,7 +1499,7 @@ TEST (node, block_confirm)
 	rai::genesis genesis;
 	system.nodes[0]->ledger.state_block_parse_canary = genesis.hash ();
 	system.wallet (0)->insert_adhoc (rai::test_genesis_key.prv);
-	auto send1 (std::make_shared<rai::state_block> (rai::test_genesis_key.pub, genesis.hash (), rai::test_genesis_key.pub, rai::genesis_amount - rai::Gxrb_ratio, rai::test_genesis_key.pub, rai::test_genesis_key.prv, rai::test_genesis_key.pub, system.nodes[0]->generate_work (genesis.hash ())));
+	auto send1 (std::make_shared<rai::state_block> (rai::test_genesis_key.pub, genesis.hash (), rai::test_genesis_key.pub, rai::genesis_amount - rai::Geur_ratio, rai::test_genesis_key.pub, rai::test_genesis_key.prv, rai::test_genesis_key.pub, system.nodes[0]->generate_work (genesis.hash ())));
 	{
 		rai::transaction transaction (system.nodes[0]->store.environment, nullptr, true);
 		ASSERT_EQ (rai::process_result::progress, system.nodes[0]->ledger.process (transaction, *send1).code);

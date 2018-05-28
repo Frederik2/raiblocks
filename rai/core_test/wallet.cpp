@@ -876,8 +876,8 @@ TEST (wallet, send_race)
 	rai::keypair key2;
 	for (auto i (1); i < 60; ++i)
 	{
-		ASSERT_NE (nullptr, system.wallet (0)->send_action (rai::test_genesis_key.pub, key2.pub, rai::Gxrb_ratio));
-		ASSERT_EQ (rai::genesis_amount - rai::Gxrb_ratio * i, system.nodes[0]->balance (rai::test_genesis_key.pub));
+		ASSERT_NE (nullptr, system.wallet (0)->send_action (rai::test_genesis_key.pub, key2.pub, rai::Geur_ratio));
+		ASSERT_EQ (rai::genesis_amount - rai::Geur_ratio * i, system.nodes[0]->balance (rai::test_genesis_key.pub));
 	}
 }
 
@@ -985,7 +985,7 @@ TEST (wallet, state_implicit_generate)
 	{
 		rai::transaction transaction (system.nodes[0]->store.environment, nullptr, true);
 		ASSERT_FALSE (system.wallet (0)->should_generate_state_block (transaction, genesis.hash ()));
-		rai::state_block block (rai::test_genesis_key.pub, genesis.hash (), rai::test_genesis_key.pub, rai::genesis_amount - rai::Gxrb_ratio, rai::test_genesis_key.pub, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
+		rai::state_block block (rai::test_genesis_key.pub, genesis.hash (), rai::test_genesis_key.pub, rai::genesis_amount - rai::Geur_ratio, rai::test_genesis_key.pub, rai::test_genesis_key.prv, rai::test_genesis_key.pub, 0);
 		ASSERT_EQ (rai::process_result::progress, system.nodes[0]->ledger.process (transaction, block).code);
 		ASSERT_TRUE (system.wallet (0)->should_generate_state_block (transaction, block.hash ()));
 	}
